@@ -23,4 +23,4 @@ source_group("Detector" FILES ${detector_srcs})
 
 add_executable(detector ${detector_srcs})
 target_include_directories(detector PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries( detector ${OpenCV_Libs} )
+target_link_libraries( detector ${OpenCV_LIBS} )
