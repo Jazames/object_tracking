@@ -43,12 +43,12 @@ int main()
    	sprintf(min_object_dimension_trackbar_name, "Min Object Dimension x %d", MIN_OBJECT_DIMENSION_MAX);
 
    	//variables because is broken. 
-   	int threshold;
-	int detectShadows_int;
-	int learningRate_int; //value from 0.0 to 1.0. values < 0 indicate to use a predefined value. 
-	int morphShape_int;
-	int erosionSize;     
-	int minObjectDimension; 
+   	int threshold = INITIAL_THRESHOLD;
+	int detectShadows_int = 1;
+	int learningRate_int = INITIAL_LEARNING_RATE; //value from 0.0 to 1.0. values < 0 indicate to use a predefined value. 
+	int morphShape_int = 2;
+	int erosionSize = INITIAL_EROSION_SIZE;     
+	int minObjectDimension = INITIAL_MIN_OBJECT_SIZE; 
 
 	cv::createTrackbar(threshold_trackbar_name, tuning_window_name, &threshold, THRESHOLD_MAX, thresholdCallback, &detector);
    	cv::createTrackbar(detect_shadows_trackbar_name, tuning_window_name, &detectShadows_int, DETECT_SHADOWS_MAX, detectShadowsCallback, &detector);
@@ -57,7 +57,7 @@ int main()
    	cv::createTrackbar(erosion_size_trackbar_name, tuning_window_name, &erosionSize, EROSION_SIZE_MAX, erosionSizeCallback, &detector);
    	cv::createTrackbar(min_object_dimension_trackbar_name, tuning_window_name, &minObjectDimension, MIN_OBJECT_DIMENSION_MAX, minObjectDimensionCallback, &detector);
 
-   	cv::imshow(tuning_window_name);
+   //	cv::imshow(tuning_window_name);
    	cv::waitKey(25);
 
 

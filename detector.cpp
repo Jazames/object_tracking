@@ -62,8 +62,8 @@ void minObjectDimensionCallback(int value, void* ptr)
 
 
 
-Detector::Detector() : mVidCap(), mCameraOpen(false), mThreshold(32), mDetectShadows(1), 
-	mLearningRate(-1), mMorphShape(cv::MORPH_CROSS), mErosionSize(1), mMinObjectDimension(32)
+Detector::Detector() : mVidCap(), mCameraOpen(false), mThreshold(INITIAL_THRESHOLD), mDetectShadows(1), 
+	mLearningRate((double)INITIAL_LEARNING_RATE/(double)LEARNING_RATE_MAX), mMorphShape(cv::MORPH_CROSS), mErosionSize(INITIAL_EROSION_SIZE), mMinObjectDimension(INITIAL_MIN_OBJECT_SIZE)
 {
 	mCameraOpen = mVidCap.open(0);
 	if(mCameraOpen) 
@@ -120,11 +120,13 @@ cv::Mat Detector::getForegroundMask(cv::Mat frame, double learning_rate)
 cv::Mat Detector::filterMask(cv::Mat fgMask)
 {
 	cv::MorphShapes shape = mMorphShape;//cross, rect, ellipse
-	cv::MorphTypes morph_type = cv::MORPH_OPEN;
+	cv::MorphTypes morph_type = cv::MORPH_CLOSE;
 	int erosion_size = mErosionSize;
 	cv::Mat element = cv::getStructuringElement(shape, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), cv::Point(erosion_size, erosion_size));
 	cv::Mat newImg;
 	cv::morphologyEx(fgMask, newImg, morph_type, element);
+	morph_type = cv::MORPH_OPEN;
+	cv::morphologyEx(newImg, newImg, morph_type, element);
 	morph_type = cv::MORPH_DILATE;
 	cv::morphologyEx(newImg, newImg, morph_type, element);
 	return newImg;

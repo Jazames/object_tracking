@@ -12,10 +12,15 @@
 
 #define THRESHOLD_MAX            100  
 #define DETECT_SHADOWS_MAX       1    
-#define LEARNING_RATE_MAX        1000 //this gets divided by max in the equation. 
+#define LEARNING_RATE_MAX        100000 //this gets divided by max in the equation. 
 #define MORPH_SHAPE_MAX          2    //enums to a shape
 #define EROSION_SIZE_MAX         25   
 #define MIN_OBJECT_DIMENSION_MAX 100  
+
+#define INITIAL_THRESHOLD 64
+#define INITIAL_LEARNING_RATE 70
+#define INITIAL_EROSION_SIZE 1
+#define INITIAL_MIN_OBJECT_SIZE 24
 
 
 void thresholdCallback(int value, void* ptr);
@@ -50,10 +55,10 @@ public:
 	int mErosionSize;     
 	int mMinObjectDimension; 
 
+	cv::Ptr<cv::BackgroundSubtractor> mpBackSub;
 private:
 	cv::VideoCapture mVidCap;
 	bool mCameraOpen;
-	cv::Ptr<cv::BackgroundSubtractor> mpBackSub;
 
 	void thresholdCallback(int, void*);
 	void detectShadowsCallback(int, void*);
