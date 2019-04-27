@@ -18,7 +18,7 @@ public:
 	Detector();
 	void setBackground();
 	cv::Mat getNewFrame();
-	cv::Mat getNewForegroundMask(cv::Mat frame, double learning_rate = 0.001);
+	cv::Mat getForegroundMask(cv::Mat frame, double learning_rate);
 	cv::Mat filterMask(cv::Mat fgMask);
 	std::vector<cv::Rect> findObjectBoundaries(cv::Mat img);
 	std::vector<cv::Point> findObjectCenters(cv::Mat img, int min_dimension);
@@ -38,12 +38,12 @@ private:
 
 	//Tuning parameters
 	//number of background frames, 
-	int mThreshold
+	int mThreshold;
 	bool mDetectShadows;
 	int mDetectShadows_int;
 	double mLearningRate;
 	int mLearningRate_int; //value from 0.0 to 1.0. values < 0 indicate to use a predefined value. 
-	cv::MorphShape mMorphShape;      //Enum
+	cv::MorphShapes mMorphShape;      //Enum
 	int mMorphShape_int;
 	int mErosionSize;     
 	int mMinObjectDimension; 

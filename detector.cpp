@@ -3,6 +3,10 @@
 #include <cstdlib>
 #include <vector>
 #include <string>
+#include <functional>
+#include <opencv2/highgui.hpp>
+#include <opencv2/videoio.hpp>
+			
 
 #define THRESHOLD_MAX            100  
 #define DETECT_SHADOWS_MAX       1    
@@ -59,7 +63,7 @@ cv::Mat Detector::getNewFrame()
 	return frame;
 }
 
-cv::Mat Detector::getNewForegroundMask(cv::Mat frame, double learning_rate=0.001) 
+cv::Mat Detector::getForegroundMask(cv::Mat frame, double learning_rate) 
 {
 	cv::Mat fgMask;
 	
@@ -175,14 +179,16 @@ std::vector<cv::Point> Detector::getBasesFromNewFrame()
 	fgMask = filterMask(fgMask);
 	std::vector<cv::Point> bases = findObjectBases(fgMask, mMinObjectDimension);
 
+	cv::Scalar color = cv::Scalar(0,200,100);
+
 	for(auto base : bases)
 	{
 		cv::circle(img, base, 4, color, 4);
 	}
 
 	//Show stuff for debugging/tuning. 
-	cv::imgshow("Image", img);
-	cv::imgshow("Mask", fgMask);
+	cv::imshow("Image", img);
+	cv::imshow("Mask", fgMask);
 
 	//setup tuning interface. 
 	std::string tuning_window_name = "Tuning";
@@ -206,14 +212,15 @@ std::vector<cv::Point> Detector::getBasesFromNewFrame()
 	char min_object_dimension_trackbar_name[50];
    	sprintf(min_object_dimension_trackbar_name, "Min Object Dimension x %d", MIN_OBJECT_DIMENSION_MAX);
 
-   	cv::createTrackbar(threshold_trackbar_name, tuning_window_name, &mThreshold, THRESHOLD_MAX, thresholdCallback);
-   	cv::createTrackbar(detect_shadows_trackbar_name, tuning_window_name, &mDetectShadows_int, DETECT_SHADOWS_MAX, detectShawdowsCallback);
+   	
+	cv::createTrackbar(threshold_trackbar_name, tuning_window_name, &mThreshold, THRESHOLD_MAX, &Detector::thresholdCallback, this);
+   	cv::createTrackbar(detect_shadows_trackbar_name, tuning_window_name, &mDetectShadows_int, DETECT_SHADOWS_MAX, &Detector::detectShadowsCallback);
    	cv::createTrackbar(learning_rate_trackbar_name, tuning_window_name, &mLearningRate_int, LEARNING_RATE_MAX, learningRateCallback);
    	cv::createTrackbar(morph_shape_trackbar_name, tuning_window_name, &mMorphShape_int, MORPH_SHAPE_MAX, morphShapeCallback);
    	cv::createTrackbar(erosion_size_trackbar_name, tuning_window_name, &mErosionSize, EROSION_SIZE_MAX, erosionSizeCallback);
-   	cv::createTrackbar(min_object_dimension_trackbar_name, tuning_window_name, &mMinObjectDimension, MIN_OBJECT_DIMENSION_MAX, minObjectDimensionCallback);
+   	cv::createTrackbar(min_object_dimension_trackbar_name, tuning_window_name, &mMinObjectDimension, MIN_OBJECT_DIMENSION_MAX, Detector::minObjectDimensionCallback);
 
-   	cv::imgshow(tuning_window_name);
+   	cv::imshow(tuning_window_name);
 
    	//exit window if something. 
 	char c = (char) cv::waitKey(1); //Get key press and give time to display image.
@@ -241,7 +248,7 @@ void Detector::thresholdCallback(int, void*)
 	mpBackSub = cv::createBackgroundSubtractorMOG2(BACKGROUND_FRAMES, mThreshold, mDetectShadows);
 }
 
-void Detector::detectShawdowsCallback(int, void*)
+void Detector::detectShadowsCallback(int, void*)
 {
 	mDetectShadows = mDetectShadows_int == 1;
 }
