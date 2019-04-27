@@ -27,7 +27,26 @@ public:
 private:
 	cv::VideoCapture mVidCap;
 	bool mCameraOpen;
-	cv::Ptr<cv::BackgroundSubtractor> mpBackSub;	
+	cv::Ptr<cv::BackgroundSubtractor> mpBackSub;
+
+	void thresholdCallback(int, void*);
+	void detectShadowsCallback(int, void*);
+	void learningRateCallback(int, void*);
+	void morphShapeCallback(int, void*);
+	void erosionSizeCallback(int, void*);
+	void minObjectDimensionCallback(int, void*);
+
+	//Tuning parameters
+	//number of background frames, 
+	int mThreshold
+	bool mDetectShadows;
+	int mDetectShadows_int;
+	double mLearningRate;
+	int mLearningRate_int; //value from 0.0 to 1.0. values < 0 indicate to use a predefined value. 
+	cv::MorphShape mMorphShape;      //Enum
+	int mMorphShape_int;
+	int mErosionSize;     
+	int mMinObjectDimension; 
 };
 
 #endif

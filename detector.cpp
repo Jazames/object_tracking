@@ -2,8 +2,19 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <string>
 
-Detector::Detector() : mVidCap(), mCameraOpen(false) 
+#define THRESHOLD_MAX            100  
+#define DETECT_SHADOWS_MAX       1    
+#define LEARNING_RATE_MAX        1000 //this gets divided by max in the equation. 
+#define MORPH_SHAPE_MAX          2    //enums to a shape
+#define EROSION_SIZE_MAX         25   
+#define MIN_OBJECT_DIMENSION_MAX 100  
+
+
+
+Detector::Detector() : mVidCap(), mCameraOpen(false), mThreshold(32), mDetectShadows(1), 
+	mLearningRate(-1), mMorphShape(cv::MORPH_CROSS), mErosionSize(1), mMinObjectDimension(32)
 {
 	mCameraOpen = mVidCap.open(0);
 	if(mCameraOpen) 
@@ -16,7 +27,7 @@ Detector::Detector() : mVidCap(), mCameraOpen(false)
 		exit(EXIT_FAILURE);
 	}
 	//Might need to select a different kind of background subtractor.
-	mpBackSub = cv::createBackgroundSubtractorMOG2(BACKGROUND_FRAMES, 64, true);
+	mpBackSub = cv::createBackgroundSubtractorMOG2(BACKGROUND_FRAMES, mThreshold, mDetectShadows);
 }
 
 void Detector::setBackground() 
@@ -59,9 +70,9 @@ cv::Mat Detector::getNewForegroundMask(cv::Mat frame, double learning_rate=0.001
 
 cv::Mat Detector::filterMask(cv::Mat fgMask)
 {
-	cv::MorphShapes shape = cv::MORPH_CROSS;//cross, rect, ellipse
+	cv::MorphShapes shape = mMorphShape;//cross, rect, ellipse
 	cv::MorphTypes morph_type = cv::MORPH_OPEN;
-	int erosion_size = 2;
+	int erosion_size = mErosionSize;
 	cv::Mat element = cv::getStructuringElement(shape, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), cv::Point(erosion_size, erosion_size));
 	cv::Mat newImg;
 	cv::morphologyEx(fgMask, newImg, morph_type, element);
@@ -157,22 +168,117 @@ std::vector<cv::Point> Detector::findObjectBases(cv::Mat img, int min_dimension)
 
 
 std::vector<cv::Point> Detector::getBasesFromNewFrame()
-{
-	//Variables. 
-	double learning_rate = 0.001;
-	int min_dimension = 32;
-	
+{	
 	//Perform computations. 
 	cv::Mat img = getNewFrame();
-	cv::Mat fgMask = getForegroundMask(img, learning_rate);
+	cv::Mat fgMask = getForegroundMask(img, mLearningRate);
 	fgMask = filterMask(fgMask);
-	std::vector<cv::Point> bases = findObjectBases(fgMask, min_dimension);
+	std::vector<cv::Point> bases = findObjectBases(fgMask, mMinObjectDimension);
 
-	//Show stuff for debugging. 
+	for(auto base : bases)
+	{
+		cv::circle(img, base, 4, color, 4);
+	}
+
+	//Show stuff for debugging/tuning. 
 	cv::imgshow("Image", img);
 	cv::imgshow("Mask", fgMask);
 
+	//setup tuning interface. 
+	std::string tuning_window_name = "Tuning";
+	cv::namedWindow(tuning_window_name, cv::WINDOW_AUTOSIZE);
+
+	char threshold_trackbar_name[50];
+   	sprintf(threshold_trackbar_name, "Threshold x %d", THRESHOLD_MAX);
+
+	char detect_shadows_trackbar_name[50];
+   	sprintf(detect_shadows_trackbar_name, "Detect Shadows x %d", DETECT_SHADOWS_MAX);
+
+	char learning_rate_trackbar_name[50];
+   	sprintf(learning_rate_trackbar_name, "Learning Rate x %d", LEARNING_RATE_MAX);
+
+	char morph_shape_trackbar_name[50];
+   	sprintf(morph_shape_trackbar_name, "Morph Shape x %d", MORPH_SHAPE_MAX);
+
+	char erosion_size_trackbar_name[50];
+   	sprintf(erosion_size_trackbar_name, "Erosion Size x %d", EROSION_SIZE_MAX);
+
+	char min_object_dimension_trackbar_name[50];
+   	sprintf(min_object_dimension_trackbar_name, "Min Object Dimension x %d", MIN_OBJECT_DIMENSION_MAX);
+
+   	cv::createTrackbar(threshold_trackbar_name, tuning_window_name, &mThreshold, THRESHOLD_MAX, thresholdCallback);
+   	cv::createTrackbar(detect_shadows_trackbar_name, tuning_window_name, &mDetectShadows_int, DETECT_SHADOWS_MAX, detectShawdowsCallback);
+   	cv::createTrackbar(learning_rate_trackbar_name, tuning_window_name, &mLearningRate_int, LEARNING_RATE_MAX, learningRateCallback);
+   	cv::createTrackbar(morph_shape_trackbar_name, tuning_window_name, &mMorphShape_int, MORPH_SHAPE_MAX, morphShapeCallback);
+   	cv::createTrackbar(erosion_size_trackbar_name, tuning_window_name, &mErosionSize, EROSION_SIZE_MAX, erosionSizeCallback);
+   	cv::createTrackbar(min_object_dimension_trackbar_name, tuning_window_name, &mMinObjectDimension, MIN_OBJECT_DIMENSION_MAX, minObjectDimensionCallback);
+
+   	cv::imgshow(tuning_window_name);
+
+   	//exit window if something. 
+	char c = (char) cv::waitKey(1); //Get key press and give time to display image.
+	if(c == 27) //Code for excape key 
+	{
+		exit(EXIT_SUCCESS);
+	}
 
 	//Return 
 	return bases;
 }
+
+/*
+//Params for tuning
+	int mThreshold
+	bool mDetectShadows;
+	double mLearningRate; //value from 0.0 to 1.0. values < 0 indicate to use a predefined value. 
+	int mMorphShape;      //Enum
+	int mErosionSize;     
+	int mMinObjectDimension; 
+	*/
+
+void Detector::thresholdCallback(int, void*)
+{
+	mpBackSub = cv::createBackgroundSubtractorMOG2(BACKGROUND_FRAMES, mThreshold, mDetectShadows);
+}
+
+void Detector::detectShawdowsCallback(int, void*)
+{
+	mDetectShadows = mDetectShadows_int == 1;
+}
+
+void Detector::learningRateCallback(int, void*)
+{
+	mLearningRate = (double)mLearningRate_int / (double) LEARNING_RATE_MAX;
+}
+
+void Detector::morphShapeCallback(int, void*)
+{
+	switch(mMorphShape_int)
+	{
+		case 0:
+			mMorphShape = cv::MORPH_RECT;
+			break;
+		case 1:
+			mMorphShape = cv::MORPH_ELLIPSE;
+			break;
+		case 2:
+			mMorphShape = cv::MORPH_CROSS;
+			break;
+		default: 
+			std::cout << "Something broken happened, morph shape is default." << std::endl;
+			mMorphShape = cv::MORPH_CROSS;
+	}
+}
+
+void Detector::erosionSizeCallback(int, void*)
+{
+	
+}
+
+void Detector::minObjectDimensionCallback(int, void*)
+{
+	
+}
+
+
+

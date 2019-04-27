@@ -18,6 +18,7 @@ int main()
 
 	while(true)
 	{
+		/*
 		cv::Mat fgMask = detector.getNewForegroundMask();
 		fgMask = detector.filterMask(fgMask);	
 	
@@ -48,6 +49,13 @@ int main()
 		if(c == 27) //Code for excape key 
 		{
 			break;
+		}
+		*/
+
+		auto bases = detector.getBasesFromNewFrame();
+		for(auto base : bases)
+		{
+			std::cout << "Base found at x=" << base.x << ", y=" << base.y << std::endl;
 		}
 	}
 
