@@ -9,22 +9,22 @@
 			
 
 
-void detectShadowsCallback(int, void* ptr)
+void detectShadowsCallback(int value, void* ptr)
 {
 	Detector* that = (Detector*) ptr;
-	that->mDetectShadows = that->mDetectShadows_int == 1;
+	that->mDetectShadows = value == 1;
 }
 
-void learningRateCallback(int, void* ptr)
+void learningRateCallback(int value, void* ptr)
 {
 	Detector* that = (Detector*) ptr;
-	that->mLearningRate = (double)that->mLearningRate_int / (double) LEARNING_RATE_MAX;
+	that->mLearningRate = (double) value / (double) LEARNING_RATE_MAX;
 }
 
-void morphShapeCallback(int, void* ptr)
+void morphShapeCallback(int value, void* ptr)
 {
 	Detector* that = (Detector*) ptr;
-	switch(that->mMorphShape_int)
+	switch(value)
 	{
 		case 0:
 			that->mMorphShape = cv::MORPH_RECT;
@@ -41,14 +41,16 @@ void morphShapeCallback(int, void* ptr)
 	}
 }
 
-void erosionSizeCallback(int, void* ptr)
+void erosionSizeCallback(int value, void* ptr)
 {
 	Detector* that = (Detector*) ptr;
+	that->mErosionSize = value;
 }
 
-void minObjectDimensionCallback(int, void* ptr)
+void minObjectDimensionCallback(int value, void* ptr)
 {
 	Detector* that = (Detector*) ptr;
+	that->mMinObjectDimension = value;
 }
 
 

@@ -42,13 +42,20 @@ int main()
 	char min_object_dimension_trackbar_name[50];
    	sprintf(min_object_dimension_trackbar_name, "Min Object Dimension x %d", MIN_OBJECT_DIMENSION_MAX);
 
-   	
-	cv::createTrackbar(threshold_trackbar_name, tuning_window_name, &mThreshold, THRESHOLD_MAX, thresholdCallback, &detector);
-   	cv::createTrackbar(detect_shadows_trackbar_name, tuning_window_name, &mDetectShadows_int, DETECT_SHADOWS_MAX, detectShadowsCallback, &detector);
-   	cv::createTrackbar(learning_rate_trackbar_name, tuning_window_name, &mLearningRate_int, LEARNING_RATE_MAX, learningRateCallback, &detector);
-   	cv::createTrackbar(morph_shape_trackbar_name, tuning_window_name, &mMorphShape_int, MORPH_SHAPE_MAX, morphShapeCallback, &detector);
-   	cv::createTrackbar(erosion_size_trackbar_name, tuning_window_name, &mErosionSize, EROSION_SIZE_MAX, erosionSizeCallback, &detector);
-   	cv::createTrackbar(min_object_dimension_trackbar_name, tuning_window_name, &mMinObjectDimension, MIN_OBJECT_DIMENSION_MAX, minObjectDimensionCallback, &detector);
+   	//variables because is broken. 
+   	int threshold;
+	int detectShadows_int;
+	int learningRate_int; //value from 0.0 to 1.0. values < 0 indicate to use a predefined value. 
+	int morphShape_int;
+	int erosionSize;     
+	int minObjectDimension; 
+
+	cv::createTrackbar(threshold_trackbar_name, tuning_window_name, &threshold, THRESHOLD_MAX, thresholdCallback, &detector);
+   	cv::createTrackbar(detect_shadows_trackbar_name, tuning_window_name, &detectShadows_int, DETECT_SHADOWS_MAX, detectShadowsCallback, &detector);
+   	cv::createTrackbar(learning_rate_trackbar_name, tuning_window_name, &learningRate_int, LEARNING_RATE_MAX, learningRateCallback, &detector);
+   	cv::createTrackbar(morph_shape_trackbar_name, tuning_window_name, &morphShape_int, MORPH_SHAPE_MAX, morphShapeCallback, &detector);
+   	cv::createTrackbar(erosion_size_trackbar_name, tuning_window_name, &erosionSize, EROSION_SIZE_MAX, erosionSizeCallback, &detector);
+   	cv::createTrackbar(min_object_dimension_trackbar_name, tuning_window_name, &minObjectDimension, MIN_OBJECT_DIMENSION_MAX, minObjectDimensionCallback, &detector);
 
    	cv::imshow(tuning_window_name);
    	cv::waitKey(25);
