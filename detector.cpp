@@ -8,11 +8,17 @@
 #include <opencv2/videoio.hpp>
 			
 
+void thresholdCallback(int value, void* ptr)
+{
+	Detector* detector = (Detector*) ptr;
+	detector->mpBackSub = cv::createBackgroundSubtractorMOG2(BACKGROUND_FRAMES, detector->mThreshold, detector->mDetectShadows);
+}
 
 void detectShadowsCallback(int value, void* ptr)
 {
-	Detector* that = (Detector*) ptr;
-	that->mDetectShadows = value == 1;
+	Detector* detector = (Detector*) ptr;
+	detector->mDetectShadows = value >= 1;
+	detector->mpBackSub = cv::createBackgroundSubtractorMOG2(BACKGROUND_FRAMES, detector->mThreshold, detector->mDetectShadows);
 }
 
 void learningRateCallback(int value, void* ptr)

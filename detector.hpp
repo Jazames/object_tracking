@@ -18,6 +18,7 @@
 #define MIN_OBJECT_DIMENSION_MAX 100  
 
 
+void thresholdCallback(int value, void* ptr);
 void detectShadowsCallback(int, void* ptr);
 void learningRateCallback(int, void* ptr);
 void morphShapeCallback(int, void* ptr);
