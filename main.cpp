@@ -7,6 +7,10 @@
 
 #include "detector.hpp"
 
+
+
+
+
 int main()
 {
 	Detector detector;
@@ -15,6 +19,40 @@ int main()
 	std::cout << "Trained Background" << std::endl;
 
 	int i = 0;
+
+	//setup tuning interface. 
+	std::string tuning_window_name = "Tuning";
+	cv::namedWindow(tuning_window_name, cv::WINDOW_AUTOSIZE);
+
+	char threshold_trackbar_name[50];
+   	sprintf(threshold_trackbar_name, "Threshold x %d", THRESHOLD_MAX);
+
+	char detect_shadows_trackbar_name[50];
+   	sprintf(detect_shadows_trackbar_name, "Detect Shadows x %d", DETECT_SHADOWS_MAX);
+
+	char learning_rate_trackbar_name[50];
+   	sprintf(learning_rate_trackbar_name, "Learning Rate x %d", LEARNING_RATE_MAX);
+
+	char morph_shape_trackbar_name[50];
+   	sprintf(morph_shape_trackbar_name, "Morph Shape x %d", MORPH_SHAPE_MAX);
+
+	char erosion_size_trackbar_name[50];
+   	sprintf(erosion_size_trackbar_name, "Erosion Size x %d", EROSION_SIZE_MAX);
+
+	char min_object_dimension_trackbar_name[50];
+   	sprintf(min_object_dimension_trackbar_name, "Min Object Dimension x %d", MIN_OBJECT_DIMENSION_MAX);
+
+   	
+	cv::createTrackbar(threshold_trackbar_name, tuning_window_name, &mThreshold, THRESHOLD_MAX, thresholdCallback, &detector);
+   	cv::createTrackbar(detect_shadows_trackbar_name, tuning_window_name, &mDetectShadows_int, DETECT_SHADOWS_MAX, detectShadowsCallback, &detector);
+   	cv::createTrackbar(learning_rate_trackbar_name, tuning_window_name, &mLearningRate_int, LEARNING_RATE_MAX, learningRateCallback, &detector);
+   	cv::createTrackbar(morph_shape_trackbar_name, tuning_window_name, &mMorphShape_int, MORPH_SHAPE_MAX, morphShapeCallback, &detector);
+   	cv::createTrackbar(erosion_size_trackbar_name, tuning_window_name, &mErosionSize, EROSION_SIZE_MAX, erosionSizeCallback, &detector);
+   	cv::createTrackbar(min_object_dimension_trackbar_name, tuning_window_name, &mMinObjectDimension, MIN_OBJECT_DIMENSION_MAX, minObjectDimensionCallback, &detector);
+
+   	cv::imshow(tuning_window_name);
+   	cv::waitKey(25);
+
 
 	while(true)
 	{

@@ -10,7 +10,19 @@
 
 #define BACKGROUND_FRAMES 50
 
+#define THRESHOLD_MAX            100  
+#define DETECT_SHADOWS_MAX       1    
+#define LEARNING_RATE_MAX        1000 //this gets divided by max in the equation. 
+#define MORPH_SHAPE_MAX          2    //enums to a shape
+#define EROSION_SIZE_MAX         25   
+#define MIN_OBJECT_DIMENSION_MAX 100  
 
+
+void detectShadowsCallback(int, void* ptr);
+void learningRateCallback(int, void* ptr);
+void morphShapeCallback(int, void* ptr);
+void erosionSizeCallback(int, void* ptr);
+void minObjectDimensionCallback(int, void* ptr);
 
 class Detector
 {
@@ -24,6 +36,19 @@ public:
 	std::vector<cv::Point> findObjectCenters(cv::Mat img, int min_dimension);
 	std::vector<cv::Point> findObjectBases(cv::Mat img, int min_dimension);
 	std::vector<cv::Point> getBasesFromNewFrame();
+
+
+	//public because it's easier to access them if they're public. 
+	int mThreshold;
+	bool mDetectShadows;
+	int mDetectShadows_int;
+	double mLearningRate;
+	int mLearningRate_int; //value from 0.0 to 1.0. values < 0 indicate to use a predefined value. 
+	cv::MorphShapes mMorphShape;      //Enum
+	int mMorphShape_int;
+	int mErosionSize;     
+	int mMinObjectDimension; 
+
 private:
 	cv::VideoCapture mVidCap;
 	bool mCameraOpen;
@@ -38,15 +63,10 @@ private:
 
 	//Tuning parameters
 	//number of background frames, 
-	int mThreshold;
-	bool mDetectShadows;
-	int mDetectShadows_int;
-	double mLearningRate;
-	int mLearningRate_int; //value from 0.0 to 1.0. values < 0 indicate to use a predefined value. 
-	cv::MorphShapes mMorphShape;      //Enum
-	int mMorphShape_int;
-	int mErosionSize;     
-	int mMinObjectDimension; 
+
 };
+
+
+
 
 #endif

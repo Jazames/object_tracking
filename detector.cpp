@@ -8,12 +8,49 @@
 #include <opencv2/videoio.hpp>
 			
 
-#define THRESHOLD_MAX            100  
-#define DETECT_SHADOWS_MAX       1    
-#define LEARNING_RATE_MAX        1000 //this gets divided by max in the equation. 
-#define MORPH_SHAPE_MAX          2    //enums to a shape
-#define EROSION_SIZE_MAX         25   
-#define MIN_OBJECT_DIMENSION_MAX 100  
+
+void detectShadowsCallback(int, void* ptr)
+{
+	Detector* that = (Detector*) ptr;
+	that->mDetectShadows = that->mDetectShadows_int == 1;
+}
+
+void learningRateCallback(int, void* ptr)
+{
+	Detector* that = (Detector*) ptr;
+	that->mLearningRate = (double)that->mLearningRate_int / (double) LEARNING_RATE_MAX;
+}
+
+void morphShapeCallback(int, void* ptr)
+{
+	Detector* that = (Detector*) ptr;
+	switch(that->mMorphShape_int)
+	{
+		case 0:
+			that->mMorphShape = cv::MORPH_RECT;
+			break;
+		case 1:
+			that->mMorphShape = cv::MORPH_ELLIPSE;
+			break;
+		case 2:
+			that->mMorphShape = cv::MORPH_CROSS;
+			break;
+		default: 
+			std::cout << "Something broken happened, morph shape is default." << std::endl;
+			that->mMorphShape = cv::MORPH_CROSS;
+	}
+}
+
+void erosionSizeCallback(int, void* ptr)
+{
+	Detector* that = (Detector*) ptr;
+}
+
+void minObjectDimensionCallback(int, void* ptr)
+{
+	Detector* that = (Detector*) ptr;
+}
+
 
 
 
@@ -189,38 +226,6 @@ std::vector<cv::Point> Detector::getBasesFromNewFrame()
 	//Show stuff for debugging/tuning. 
 	cv::imshow("Image", img);
 	cv::imshow("Mask", fgMask);
-
-	//setup tuning interface. 
-	std::string tuning_window_name = "Tuning";
-	cv::namedWindow(tuning_window_name, cv::WINDOW_AUTOSIZE);
-
-	char threshold_trackbar_name[50];
-   	sprintf(threshold_trackbar_name, "Threshold x %d", THRESHOLD_MAX);
-
-	char detect_shadows_trackbar_name[50];
-   	sprintf(detect_shadows_trackbar_name, "Detect Shadows x %d", DETECT_SHADOWS_MAX);
-
-	char learning_rate_trackbar_name[50];
-   	sprintf(learning_rate_trackbar_name, "Learning Rate x %d", LEARNING_RATE_MAX);
-
-	char morph_shape_trackbar_name[50];
-   	sprintf(morph_shape_trackbar_name, "Morph Shape x %d", MORPH_SHAPE_MAX);
-
-	char erosion_size_trackbar_name[50];
-   	sprintf(erosion_size_trackbar_name, "Erosion Size x %d", EROSION_SIZE_MAX);
-
-	char min_object_dimension_trackbar_name[50];
-   	sprintf(min_object_dimension_trackbar_name, "Min Object Dimension x %d", MIN_OBJECT_DIMENSION_MAX);
-
-   	
-	cv::createTrackbar(threshold_trackbar_name, tuning_window_name, &mThreshold, THRESHOLD_MAX, &Detector::thresholdCallback, this);
-   	cv::createTrackbar(detect_shadows_trackbar_name, tuning_window_name, &mDetectShadows_int, DETECT_SHADOWS_MAX, &Detector::detectShadowsCallback);
-   	cv::createTrackbar(learning_rate_trackbar_name, tuning_window_name, &mLearningRate_int, LEARNING_RATE_MAX, learningRateCallback);
-   	cv::createTrackbar(morph_shape_trackbar_name, tuning_window_name, &mMorphShape_int, MORPH_SHAPE_MAX, morphShapeCallback);
-   	cv::createTrackbar(erosion_size_trackbar_name, tuning_window_name, &mErosionSize, EROSION_SIZE_MAX, erosionSizeCallback);
-   	cv::createTrackbar(min_object_dimension_trackbar_name, tuning_window_name, &mMinObjectDimension, MIN_OBJECT_DIMENSION_MAX, Detector::minObjectDimensionCallback);
-
-   	cv::imshow(tuning_window_name);
 
    	//exit window if something. 
 	char c = (char) cv::waitKey(1); //Get key press and give time to display image.
