@@ -6,6 +6,8 @@
 //#include <opencv2/imgcodecs.hpp>
 
 #include "detector.hpp"
+#include "routines.hpp"
+#include "communicator.hpp"
 
 
 
@@ -61,6 +63,15 @@ int main()
    	cv::waitKey(25);
 
 
+   	Communicator& communicator = Communicator::getInstance();
+   	communicator.setDetector(detector);
+   	calibrateObjectTracker(detector);
+
+   	communicator.runCommunicator();
+
+   	std::cout << "YEAH, UH, something bad happened."
+
+//Shouldn't ever get here. 
 	while(true)
 	{
 		/*
@@ -103,10 +114,6 @@ int main()
 			std::cout << "Base found at x=" << base.x << ", y=" << base.y << std::endl;
 		}
 	}
-
-
-
-
 
 	return EXIT_SUCCESS;
 }

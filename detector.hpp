@@ -43,7 +43,6 @@ public:
 	std::vector<cv::Point> findObjectBases(cv::Mat img, int min_dimension);
 	std::vector<cv::Point> getBasesFromNewFrame();
 
-
 	//public because it's easier to access them if they're public. 
 	int mThreshold;
 	bool mDetectShadows;
@@ -69,7 +68,6 @@ private:
 
 	//Tuning parameters
 	//number of background frames, 
-
 };
 
 
