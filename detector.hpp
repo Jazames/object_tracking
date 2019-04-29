@@ -33,7 +33,7 @@ void minObjectDimensionCallback(int, void* ptr);
 class Detector
 {
 public:
-	Detector();
+	static Detector& getInstance() {static Detector instance; return instance;}
 	void setBackground();
 	cv::Mat getNewFrame();
 	cv::Mat getForegroundMask(cv::Mat frame, double learning_rate);
@@ -65,6 +65,9 @@ private:
 	void morphShapeCallback(int, void*);
 	void erosionSizeCallback(int, void*);
 	void minObjectDimensionCallback(int, void*);
+
+	Detector();
+	~Detector(); 
 
 	//Tuning parameters
 	//number of background frames, 

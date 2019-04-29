@@ -17,7 +17,7 @@
 
 #define PROXIMITY_RANGE 100
 
-Communicator::Communicator() : mDetector(), mSpraying(false), mNozzleBases(7, cv::Point(0,0)),
+Communicator::Communicator() : mDetector(Detector::getInstance()), mSpraying(false), mNozzleBases(7, cv::Point(0,0)),
 	mIncomingMessageState(0), mIncomingMessageIndex(0), mIncomingMessageChecksum(0), mIncomingMessageType(0)
 {
 	std::string port = "/dev/ttyS0"; //Or something like that. 

@@ -15,7 +15,7 @@
 
 int main()
 {
-	Detector detector;
+	Detector& detector = Detector::getInstance(); 
 
 	detector.setBackground();
 	std::cout << "Trained Background" << std::endl;
