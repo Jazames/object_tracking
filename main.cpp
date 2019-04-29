@@ -69,7 +69,7 @@ int main()
 
    	communicator.runCommunicator();
 
-   	std::cout << "YEAH, UH, something bad happened."
+   	std::cout << "YEAH, UH, something bad happened." << std::endl;
 
 //Shouldn't ever get here. 
 	while(true)

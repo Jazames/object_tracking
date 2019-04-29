@@ -12,7 +12,7 @@
 #include <fcntl.h>   /* File control definitions */
 #include <errno.h>   /* Error number definitions */
 #include <termios.h> /* POSIX terminal control definitions */
-
+#include <iostream>
 
 
 #define PROXIMITY_RANGE 100
@@ -22,7 +22,7 @@ Communicator::Communicator() : mDetector(), mSpraying(false), mNozzleBases(7, cv
 {
 	std::string port = "/dev/ttyS0"; //Or something like that. 
 
-	mUARTHandle = open(port, O_RDWR | O_NOCTTY | O_NDELAY);
+	mUARTHandle = open(port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
 	if(mUARTHandle == -1)
 	{
 		std::cout << "Warning: Unable to open port " << port << std::endl;

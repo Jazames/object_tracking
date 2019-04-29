@@ -1,6 +1,7 @@
 #ifndef COMMUNICATOR_HPP
 #define COMMUNICATOR_HPP
 
+#include "detector.hpp"
 #include <opencv2/core.hpp>
 #include <vector>
 
@@ -21,6 +22,7 @@
 
 class Communicator
 {
+public:
 	static Communicator& getInstance() {static Communicator instance; return instance;}
 	void setDetector(Detector& detector);
 	void disableNozzles();

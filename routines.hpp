@@ -6,7 +6,7 @@
 
 #define STATE_CHANGE_TIME 3000
 
-void calibrateObjectTracker(Detector* detector);
+void calibrateObjectTracker(Detector& detector);
 
 
 

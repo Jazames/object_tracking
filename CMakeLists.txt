@@ -18,6 +18,8 @@ set(detector_srcs
 	detector.hpp
 	communicator.cpp
 	communicator.hpp
+	routines.hpp
+	routines.cpp
 )
 source_group("Detector" FILES ${detector_srcs})
 
